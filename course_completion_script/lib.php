@@ -50,5 +50,21 @@ class local_course_completion_script_observer {
             "Student grades: " . json_encode($grades);
 
             error_log($logmessage);
+
+            // Logar no sistema do Moodle
+            self::add_to_log($courseid, $logmessage);
+            
+    }
+    protected static function add_to_log($courseid, $logmessage) {
+        // Criar o evento de log
+        $event = \core\event\course_completed::create([
+        'objectid' => $courseid,
+        'context' => context_course::instance($courseid),
+        'other' => [
+        'message' => $logmessage
+        ]
+        ]);
+        // Adicionar o evento ao log
+        $event->trigger();
     }
 }
